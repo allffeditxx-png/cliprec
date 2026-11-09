@@ -13,6 +13,28 @@ jobs:
       - name: Unzip source
         run: unzip -o cliprec-source.zip
 
+      - name: Fix build config
+        working-directory: cliprec
+        run: |
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          rootProject.name = 'cliprec'
+          EOF
+          cat > gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2G
+          minecraft_version=1.21.11
+          yarn_mappings=1.21.11+build.4
+          loader_version=0.18.4
+          fabric_version=0.141.3+1.21.11
+          loom_version=1.14-SNAPSHOT
+          EOF
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -20,7 +42,7 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: 8.14.3
+          gradle-version: 9.2.1
 
       - name: Build
         working-directory: cliprec
